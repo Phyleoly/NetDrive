@@ -10,19 +10,22 @@ class Server
 {
 public:
     virtual void start() = 0;
-    virtual void receiveData(const std::string &data) = 0;
+    virtual void receiveData(std::string &data) = 0;
+    virtual void receiveLargeData(char* largeData, int dataSize) = 0;
     virtual void sendData(const std::string &data) = 0;
+    virtual void sendLargeData(const char* largeData, int dataSize) = 0;
     virtual void stop() = 0;
     std::string getipAddress();
     int getport();
 
 protected:
     int serverSocket;
+    int clientSocket;
     sockaddr_in serverAddress{};
 
 private:
     std::string ipAddress; // IP地址
-    int port;              // 端口号
+    int port = 4396;              // 端口号
     bool isConnected;      // 是否已连接
 };
 
@@ -31,8 +34,10 @@ class TCPServer : public Server
 {
 public:
     void start() override;
-    void receiveData(const std::string &data) override;
+    void receiveData(std::string &data) override;
+    void receiveLargeData(char* largeData, int dataSize) override;
     void sendData(const std::string &data) override;
+    void sendLargeData(const char* largeData, int dataSize) override;
     void stop() override;
 };
 
@@ -41,8 +46,10 @@ class UDPServer : public Server
 {
 public:
     void start() override;
-    void receiveData(const std::string &data) override;
+    void receiveData(std::string &data) override;
+    void receiveLargeData(char* largeData, int dataSize) override;
     void sendData(const std::string &data) override;
+    void sendLargeData(const char* largeData, int dataSize) override;
     void stop() override;
 };
 

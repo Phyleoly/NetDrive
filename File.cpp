@@ -2,7 +2,8 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
-#include "File.h"
+#include <fstream>
+#include "include/File.h"
 
 FileChunk::FileChunk(const std::string &filePath, long long offset, int size, int id) : id(id)
 {
@@ -243,10 +244,7 @@ void FileMetadata::setCreationDate(const std::string &creationDate)
     this->creationDate = creationDate;
 }
 
-std::string FileMetadata::getModifiedDate() const
-{
-    return modifiedDate;
-}
+
 
 void FileMetadata::setModifiedDate(const std::string &modifiedDate)
 {
