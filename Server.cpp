@@ -45,7 +45,6 @@ void TCPServer::start()
 
     std::cout << "Waiting for incoming connections..." << std::endl;
 
- 
     // 接受连接请求
     sockaddr_in clientAddress{};
     socklen_t clientAddressLength = sizeof(clientAddress);
@@ -58,13 +57,13 @@ void TCPServer::start()
 }
 
 // 发送数据
-void TCPServer::sendData(const std::string& data)
+void TCPServer::sendData(const std::string &data)
 {
     send(clientSocket, data.c_str(), data.size(), 0);
 }
 
 // 传输4M大小的文件块
-void TCPServer::sendLargeData(const char* largeData, int dataSize)
+void TCPServer::sendLargeData(const char *largeData, int dataSize)
 {
     int bytesSent = 0;
     int totalBytesSent = 0;
@@ -97,7 +96,7 @@ void TCPServer::receiveData(std::string &data)
 }
 
 // 接收4M大小的文件块
-void TCPServer::receiveLargeData(char* largeData, int dataSize)
+void TCPServer::receiveLargeData(char *largeData, int dataSize)
 {
     int bytesReceived = 0;
     int totalBytesReceived = 0;
@@ -121,9 +120,35 @@ void TCPServer::stop()
     close(clientSocket);
 }
 
-int main() 
+int main()
 {
-    TCPServer test;
-    test.start();
+    TCPServer server;
+    server.start();
+
+    // // 测试接收数据
+    // std::string receivedData;
+    // server.receiveData(receivedData);
+    // std::cout << "Received data: " << receivedData << std::endl;
+
+    for (int i = 0; i < 1024; i++)
+    {
+        // 测试接收大数据块
+        char *receivedLargeData = new char[4 * 1024 * 1024]; // 4M大小的数据块
+        server.receiveLargeData(receivedLargeData, 4 * 1024 * 1024);
+        // 处理receivedLargeData
+        delete[] receivedLargeData;
+        std::cout<<"receive "<<i;
+    }
+    // // 测试发送数据
+    // std::string testData = "Hello, this is a test";
+    // server.sendData(testData);
+
+    // // 测试发送大数据块
+    // char *largeTestData = new char[4 * 1024 * 1024]; // 4M大小的数据块
+    // // 填充largeTestData
+    // server.sendLargeData(largeTestData, 4 * 1024 * 1024);
+    // delete[] largeTestData;
+
+    // 关闭socket等操作
     return 0;
 }

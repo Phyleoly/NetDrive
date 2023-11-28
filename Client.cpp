@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <chrono>
 #include <cstring>
 #include "include/Client.h"
 
@@ -45,7 +46,7 @@ void TCPClient::sendData(const std::string &data)
 }
 
 // 发送4M大小的文件块
-void TCPClient::sendLargeData(const char* largeData, int dataSize)
+void TCPClient::sendLargeData(const char *largeData, int dataSize)
 {
     int bytesSent = 0;
     int totalBytesSent = 0;
@@ -61,11 +62,10 @@ void TCPClient::sendLargeData(const char* largeData, int dataSize)
     }
 }
 
-
 // 接收自定义协议的数据
 void TCPClient::receiveData(std::string &data)
 {
-    const int bufferSize = 1024; // 选择一个合适的缓冲区大小
+    const int bufferSize = 1024;             // 选择一个合适的缓冲区大小
     std::vector<char> buffer(bufferSize, 0); // 使用vector作为缓冲区
 
     int bytesReceived = recv(clientSocket, buffer.data(), bufferSize, 0);
@@ -85,7 +85,7 @@ void TCPClient::receiveLargeData(std::vector<char> &largeData, int dataSize)
     int totalBytesReceived = 0;
     while (totalBytesReceived < dataSize)
     {
-        const int bufferSize = 1024; // 选择一个合适的缓冲区大小
+        const int bufferSize = 1024;             // 选择一个合适的缓冲区大小
         std::vector<char> buffer(bufferSize, 0); // 使用vector作为缓冲区
 
         int bytesReceived = recv(clientSocket, buffer.data(), buffer.size(), 0);
@@ -98,7 +98,6 @@ void TCPClient::receiveLargeData(std::vector<char> &largeData, int dataSize)
         largeData.insert(largeData.end(), buffer.begin(), buffer.begin() + bytesReceived);
     }
 }
-
 
 void TCPClient::disconnect()
 {
@@ -208,11 +207,61 @@ void TCPClient::disconnect()
 //     }
 // }
 
-int main() {
+
+
+int main()
+{
     TCPClient client;
-    std::string ipAddress = "127.0.0.1";
+
+    std::string ipAddress;
+    std::cout << "input ip:";
+    std::cin >> ipAddress;
     int port = 4396;
     client.connectByIp(ipAddress, port);
-    // 在这里可以添加其他测试代码
+    std::cout << "connect success!" << std::endl;
+
+    // // 在这里可以添加其他测试代码
+    // // 测试发送数据
+    // std::string testData = "Hello, this is a test";
+    // client.sendData(testData);
+    // std::cout << "sendData success!" << std::endl;
+
+    // 测试发送大数据块
+    char *largeTestData = new char[4 * 1024 * 1024]; // 4M大小的数据块
+    // 填充largeTestData，例如使用随机数据填充
+    // 填充largeTestData，例如使用随机数据填充
+    srand(static_cast<unsigned int>(time(0))); // 使用当前时间作为随机数种子
+
+    // 计时开始
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // 发送大数据块
+    for (int i = 0; i < 1024; i++)
+    {
+        client.sendLargeData(largeTestData, 4 * 1024 * 1024);
+    }
+
+    // 计时结束
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    std::cout << "Time taken to send large data: " << duration.count() << " seconds" << std::endl;
+
+    delete[] largeTestData;
+
+    // // 测试接收数据
+    // std::string receivedData;
+    // client.receiveData(receivedData);
+    // std::cout << "Received data: " << receivedData << std::endl;
+
+    // // 测试接收大数据块
+    // std::vector<char> receivedLargeData;
+    // client.receiveLargeData(receivedLargeData, 4 * 1024 * 1024);
+    // for (char c : receivedLargeData)
+    // {
+    //     // 处理每个字节
+    //     std::cout << c;
+    // }
+    client.disconnect();
     return 0;
 }

@@ -32,10 +32,45 @@ bool FileChunk::save(const std::string &filePath)
     return false;
 }
 
+bool FileChunk::uploadChunk(Client *client)
+{
+    client->sendLargeData(data.data(), blockSize);
+}
+
 int FileChunk::getId() const
 {
     return id;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 File::File(const std::string &filePath, const std::string &outputDir, int blockSize, int firstChunkId)
     : outputDir(outputDir), blockSize(blockSize), firstChunkId(firstChunkId)
@@ -119,12 +154,6 @@ bool File::mergeFiles(const std::string &outputFilePath, const std::string &file
     outputFile.close();
 
     std::cout << "Merging chunks completed." << std::endl;
-    return true;
-}
-
-bool File::uploadChunk(FileChunk *chunk)
-{
-    // TODO: Implement file chunk upload logic
     return true;
 }
 
@@ -245,8 +274,43 @@ void FileMetadata::setCreationDate(const std::string &creationDate)
 }
 
 
-
 void FileMetadata::setModifiedDate(const std::string &modifiedDate)
 {
     this->modifiedDate = modifiedDate;
+}
+
+
+
+void testFileChunk()
+{
+    std::string filePath = "example";
+    long long offset = 0;
+    int size = 4*1024*1024;
+    int id = 1;
+
+    FileChunk fileChunk(filePath, offset, size, id);
+
+    std::vector<char> &data = fileChunk.getData();
+    for (char c : data)
+    {
+        std::cout << c;
+    }
+    std::cout << std::endl;
+
+    if (fileChunk.save("newfile.txt"))
+    {
+        std::cout << "FileChunk saved successfully" << std::endl;
+    }
+    else
+    {
+        std::cout << "FileChunk save failed" << std::endl;
+    }
+
+    std::cout << "FileChunk ID: " << fileChunk.getId() << std::endl;
+}
+
+int main()
+{
+    testFileChunk();
+    return 0;
 }

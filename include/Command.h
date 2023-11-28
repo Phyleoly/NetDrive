@@ -2,6 +2,9 @@
 #define COMMAND_H
 
 #include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
 #include <memory>
 
 // 命令类
@@ -10,6 +13,13 @@ class Command
 public:
     virtual ~Command() {}
     virtual void execute() = 0;
+    virtual std::string getCommandType() = 0;
+    std::string getParameter(int i) { return parameter.at(i); }
+    int getParameterNum() { return parameter.size(); }
+    void pushParameter(std::string params) { parameter.push_back(params); }
+
+private:
+    std::vector<std::string> parameter;
 };
 
 // 创建文件夹命令类
@@ -134,7 +144,40 @@ public:
      * @param commandStr 命令行字符串
      * @return 解析得到的命令对象
      */
-    virtual std::unique_ptr<Command> parseCommand(const std::string &commandStr) = 0;
+    std::unique_ptr<Command> parseCommand(const std::string &commandStr)
+    {
+        std::unique_ptr<Command> ret;
+        std::istringstream iss(commandStr);
+        std::string token;
+
+        // 解析命令类型
+        if (std::getline(iss, token, ' '))
+        {
+            // 根据commandStr解析出对应的Command对象
+            // 这里只是一个简单的示例，实际情况可能会更复杂
+            if (token == "CreateFolder")
+            {
+                ret = std::make_unique<CreateFolderCommand>();
+            }
+            else if (token == "Delete")
+            {
+                ret = std::make_unique<DeleteCommand>();
+            }
+            else
+            {
+                // 如果无法解析出对应的Command对象，可以返回nullptr或者抛出异常
+                ret = nullptr;
+            }
+        }
+
+        // 解析参数
+        while (std::getline(iss, token, ' '))
+        {
+            // 将解析出的参数存储到parameter中
+            ret->pushParameter(token);
+        }
+        return ret;
+    }
 };
 
 // 命令执行器接口

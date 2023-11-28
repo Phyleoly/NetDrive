@@ -4,6 +4,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include "Protocol.h"
 
 // 定义一个抽象的Server类
 class Server
@@ -53,19 +57,6 @@ public:
     void stop() override;
 };
 
-// 定义一个ServerManager类，用于管理Server对象
-class ServerManager
-{
-private:
-    std::vector<Server *> servers;
 
-public:
-    void addServer(Server *server);
-    void removeServer(Server *server);
-    void startAll();
-    void receiveDataAll(const std::string &data);
-    void sendDataAll(const std::string &data);
-    void stopAll();
-};
 
 #endif
