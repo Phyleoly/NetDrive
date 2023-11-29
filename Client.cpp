@@ -104,58 +104,59 @@ void TCPClient::disconnect()
     close(clientSocket);
 }
 
-// void UDPClient::connectByIp(const std::string &ipAddress, int port)
-// {
-//     // 创建套接字
-//     clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
-//     if (clientSocket == -1)
-//     {
-//         std::cerr << "Failed to create socket" << std::endl;
-//         return;
-//     }
+void UDPClient::connectByIp(const std::string &ipAddress, int port)
+{
+    // 创建套接字
+    clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
+    if (clientSocket == -1)
+    {
+        std::cerr << "Failed to create socket" << std::endl;
+        return;
+    }
 
-//     // 设置服务器的IP地址和端口号
-//     sockaddr_in serverAddress{};
-//     serverAddress.sin_family = AF_INET;
-//     serverAddress.sin_port = htons(port);
-//     if (inet_pton(AF_INET, ipAddress.c_str(), &(serverAddress.sin_addr)) <= 0)
-//     {
-//         std::cerr << "Invalid address/ Address not supported" << std::endl;
-//         return;
-//     }
+    // 设置服务器的IP地址和端口号
+    sockaddr_in serverAddress{};
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons(port);
+    if (inet_pton(AF_INET, ipAddress.c_str(), &(serverAddress.sin_addr)) <= 0)
+    {
+        std::cerr << "Invalid address/ Address not supported" << std::endl;
+        return;
+    }
 
-//     // 连接到服务器（UDP不需要连接操作）
+    // 连接到服务器（UDP不需要连接操作）
 
-//     // 将服务器地址保存起来
-//     serverAddr = serverAddress;
-// }
+    // 将服务器地址保存起来
+    serverAddr = serverAddress;
+}
 
-// void UDPClient::sendData(const std::string &data)
-// {
-//     if (sendto(clientSocket, data.c_str(), data.length(), 0, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
-//     {
-//         std::cerr << "Send failed" << std::endl;
-//         return;
-//     }
-// }
+void UDPClient::sendData(const std::string &data)
+{
+    if (sendto(clientSocket, data.c_str(), data.length(), 0, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
+    {
+        std::cerr << "Send failed" << std::endl;
+        return;
+    }
+}
 
-// void UDPClient::receiveData(std::string &data)
-// {
-//     char buffer[MAX_BUFFER_SIZE];
-//     socklen_t serverAddrLen = sizeof(serverAddr);
-//     int bytesRead = recvfrom(clientSocket, buffer, sizeof(buffer), 0, (struct sockaddr *)&serverAddr, &serverAddrLen);
-//     if (bytesRead < 0)
-//     {
-//         std::cerr << "Receive failed" << std::endl;
-//         return;
-//     }
-//     data = std::string(buffer, bytesRead);
-// }
+void UDPClient::receiveData(std::string &data)
+{
+    const int bufferSize = 1024;     
+    char buffer[bufferSize];
+    socklen_t serverAddrLen = sizeof(serverAddr);
+    int bytesRead = recvfrom(clientSocket, buffer, sizeof(buffer), 0, (struct sockaddr *)&serverAddr, &serverAddrLen);
+    if (bytesRead < 0)
+    {
+        std::cerr << "Receive failed" << std::endl;
+        return;
+    }
+    data = std::string(buffer, bytesRead);
+}
 
-// void UDPClient::disconnect()
-// {
-//     close(clientSocket);
-// }
+void UDPClient::disconnect()
+{
+    close(clientSocket);
+}
 
 // void ClientManager::addClient(Client *client)
 // {

@@ -120,6 +120,60 @@ void TCPServer::stop()
     close(clientSocket);
 }
 
+// UDPServer的实现
+
+void UDPServer::start()
+{
+    // 创建套接字
+    serverSocket = socket(AF_INET, SOCK_DGRAM, 0);
+    if (serverSocket == -1)
+    {
+        std::cerr << "Failed to create socket" << std::endl;
+        return;
+    }
+
+    // 设置服务器的IP地址和端口号
+    sockaddr_in serverAddress{};
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    serverAddress.sin_port = htons(getport());
+
+    // 绑定套接字到指定的端口
+    if (::bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
+    {
+        std::cerr << "Bind failed" << std::endl;
+        return;
+    }
+}
+
+void UDPServer::receiveData(std::string &data)
+{
+    const int bufferSize = 1024;     
+    char buffer[bufferSize];
+    socklen_t clientAddrLen = sizeof(clientAddr);
+    int bytesRead = recvfrom(serverSocket, buffer, sizeof(buffer), 0, (struct sockaddr *)&clientAddr, &clientAddrLen);
+    if (bytesRead < 0)
+    {
+        std::cerr << "Receive failed" << std::endl;
+        return;
+    }
+    data = std::string(buffer, bytesRead);
+}
+
+void UDPServer::sendData(const std::string &data)
+{
+    if (sendto(serverSocket, data.c_str(), data.length(), 0, (struct sockaddr *)&clientAddr, sizeof(clientAddr)) < 0)
+    {
+        std::cerr << "Send failed" << std::endl;
+        return;
+    }
+}
+
+void UDPServer::stop()
+{
+    close(serverSocket);
+}
+
 int main()
 {
     TCPServer server;

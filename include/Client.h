@@ -47,6 +47,9 @@ public:
     void receiveData(std::string &data) override;
     void receiveLargeData(std::vector<char> &largeData, int dataSize) override;
     void disconnect() override;
+
+private:
+    sockaddr_in serverAddr{};
 };
 
 #endif
