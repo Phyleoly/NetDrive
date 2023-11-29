@@ -13,7 +13,7 @@ public:
 
     std::vector<char> &getData();           // 获取块的数据向量的引用
     bool save(const std::string &filePath); // 将块保存到指定的文件路径
-    bool uploadChunk(Client *client);                                                          // 上传文件块到存储空间
+    bool uploadChunk(Client *client);       // 上传文件块到存储空间
     int getId() const;                      // 获取块的ID
 private:
     std::vector<char> data; // 块的数据向量
@@ -105,8 +105,8 @@ public:
     bool mergeChunksAndDownload(const std::string &outputFilePath, const std::string &fileName); // 合并文件块并下载文件
 private:
     std::string outputDir;           // 输出目录
+    std::string cacheDir;            // 缓存目录
     int blockSize;                   // 块大小
-    int firstChunkId;                // 第一个块的ID
     std::vector<FileChunk *> chunks; // 块的集合
 };
 
