@@ -7,7 +7,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include "Protocol.h"
 
 // 定义一个抽象的Server类
 class Server
@@ -21,7 +20,7 @@ public:
     virtual void stop() = 0;
     std::string getipAddress();
     int getport();
-    void setport(int port) {this->port = port;}
+    void setport(int port) { this->port = port; }
 
 protected:
     int serverSocket;
@@ -30,7 +29,7 @@ protected:
 
 private:
     std::string ipAddress; // IP地址
-    int port;       // 端口号
+    int port;              // 端口号
     bool isConnected;      // 是否已连接
 };
 
@@ -52,10 +51,11 @@ class UDPServer : public Server
 public:
     void start() override;
     void receiveData(std::string &data) override;
-    void receiveLargeData(char *largeData, int dataSize) override;
+    void receiveLargeData(char *largeData, int dataSize) override{};
     void sendData(const std::string &data) override;
-    void sendLargeData(const char *largeData, int dataSize) override;
+    void sendLargeData(const char *largeData, int dataSize) override{};
     void stop() override;
+
 private:
     sockaddr_in clientAddr;
 };

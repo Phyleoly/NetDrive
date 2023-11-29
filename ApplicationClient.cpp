@@ -1,34 +1,48 @@
 // ApplicationClient.cpp
-
-#include "include/Client.h" // 包含客户端的头文件
-#include "include/Server.h"
+#include <iostream>
 #include <string>
+#include "include/Command.h"
+#include "include/Client.h"
 
-class ApplicationClient
-{
-private:
-    Client *client;
-    std::string cacheDir;
+// class ApplicationClient
+// {
+// private:
+//     Client *client;
+//     std::string cacheDir;
 
-public:
-    ApplicationClient(Client *client, std::string cacheDir) : client(client), cacheDir(cacheDir){};
-    ~ApplicationClient();
-};
+// public:
+//     ApplicationClient(Client *client, std::string cacheDir) : client(client), cacheDir(cacheDir){};
+//     ~ApplicationClient();
+// };
 
-void init()
-{
-    TCPClient client;
-    std::string ipAddress = "127.0.0.1";
-    int port = 4396;
+// void init()
+// {
 
-    ApplicationClient applicationClient(&client, "cache/");
+//     ClientManager clientManager;
 
-    
-    std::cout << "connect success!" << std::endl;
-}
+//     clientManager.createClient("TCP", "127.0.0.1", 4396);
+
+//     std::cout << "connect success!" << std::endl;
+// }
 
 int main()
 {
-
+    std::string input;
+    CommandParser commandParser;
+    CommandExecutor commandexecutor;
+    ClientManager clientManager;
+    
+    clientManager.createClient("UDP", "127.0.0.1", 12348);
+    clientManager.connectClient(0);
+    // clientManager.sendData(0, "Hello");
+    while (true)
+    {
+        std::cout << ">";
+        std::getline(std::cin, input);
+        Command *command = commandParser.parseCommand(input);
+        commandexecutor.executeCCommand(command, clientManager);
+    }
+    
+    clientManager.disconnectClient(0);
     return 0;
 }

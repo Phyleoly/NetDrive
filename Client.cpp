@@ -1,9 +1,3 @@
-#include <iostream>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <chrono>
-#include <cstring>
 #include "include/Client.h"
 
 void TCPClient::connectByIp(const std::string &ipAddress, int port)
@@ -23,15 +17,17 @@ void TCPClient::connectByIp(const std::string &ipAddress, int port)
     const char *ipAddressChar = ipAddress.c_str();
     if (inet_pton(AF_INET, ipAddressChar, &(serverAddress.sin_addr)) <= 0)
     {
-        std::cerr << "Invalid address/ Address not supported" << std::endl;
-        // return 1;
+        std::cerr << std::endl
+                  << ipAddressChar << std::endl
+                  << "Invalid address/ Address not supported" << std::endl;
+        return;
     }
 
     // 连接到服务器
     if (connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
     {
         std::cerr << "Connection failed" << std::endl;
-        // return 1;
+        return;
     }
 }
 
@@ -141,7 +137,7 @@ void UDPClient::sendData(const std::string &data)
 
 void UDPClient::receiveData(std::string &data)
 {
-    const int bufferSize = 1024;     
+    const int bufferSize = 1024;
     char buffer[bufferSize];
     socklen_t serverAddrLen = sizeof(serverAddr);
     int bytesRead = recvfrom(clientSocket, buffer, sizeof(buffer), 0, (struct sockaddr *)&serverAddr, &serverAddrLen);
@@ -169,7 +165,8 @@ void ClientManager::createClient(const std::string &clientType, const std::strin
     {
         client = new UDPClient();
     }
-    client->connectByIp(ipAddress, port);
+    client->setIpAddress(ipAddress);
+    client->setPort(port);
     clients.push_back(client);
 }
 
@@ -244,59 +241,16 @@ int ClientManager::getClientCount()
     return clients.size();
 }
 
-int main()
+int ClientManager::findClientIndexByIp(const std::string &ipAddress)
 {
-    TCPClient client;
-
-    std::string ipAddress;
-    std::cout << "input ip:";
-    std::cin >> ipAddress;
-    int port = 4396;
-    client.connectByIp(ipAddress, port);
-    std::cout << "connect success!" << std::endl;
-
-    // // 在这里可以添加其他测试代码
-    // // 测试发送数据
-    // std::string testData = "Hello, this is a test";
-    // client.sendData(testData);
-    // std::cout << "sendData success!" << std::endl;
-
-    // 测试发送大数据块
-    char *largeTestData = new char[4 * 1024 * 1024]; // 4M大小的数据块
-    // 填充largeTestData，例如使用随机数据填充
-    // 填充largeTestData，例如使用随机数据填充
-    srand(static_cast<unsigned int>(time(0))); // 使用当前时间作为随机数种子
-
-    // 计时开始
-    auto start = std::chrono::high_resolution_clock::now();
-
-    // 发送大数据块
-    for (int i = 0; i < 1024; i++)
+    for (int i = 0; i < clients.size(); i++)
     {
-        client.sendLargeData(largeTestData, 4 * 1024 * 1024);
+        if (clients[i]->getIpAddress() == ipAddress)
+        {
+            return i; // 返回找到的客户端索引
+        }
     }
-
-    // 计时结束
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
-
-    std::cout << "Time taken to send large data: " << duration.count() << " seconds" << std::endl;
-
-    delete[] largeTestData;
-
-    // // 测试接收数据
-    // std::string receivedData;
-    // client.receiveData(receivedData);
-    // std::cout << "Received data: " << receivedData << std::endl;
-
-    // // 测试接收大数据块
-    // std::vector<char> receivedLargeData;
-    // client.receiveLargeData(receivedLargeData, 4 * 1024 * 1024);
-    // for (char c : receivedLargeData)
-    // {
-    //     // 处理每个字节
-    //     std::cout << c;
-    // }
-    client.disconnect();
-    return 0;
+    return -1; // 如果未找到匹配的IP地址，返回-1
 }
+
+int ClientManager::getCenter() { return 0; }

@@ -32,7 +32,7 @@ void TCPServer::start()
     // 绑定套接字到指定的IP地址和端口号
     if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
     {
-        std::cerr << "Bind failed" << std::endl;
+        std::cerr << serverAddress.sin_port << "Bind failed" << std::endl;
         // return 1;
     }
 
@@ -139,7 +139,7 @@ void UDPServer::start()
     serverAddress.sin_port = htons(getport());
 
     // 绑定套接字到指定的端口
-    if (::bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
+    if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
     {
         std::cerr << "Bind failed" << std::endl;
         return;
@@ -148,7 +148,7 @@ void UDPServer::start()
 
 void UDPServer::receiveData(std::string &data)
 {
-    const int bufferSize = 1024;     
+    const int bufferSize = 1024;
     char buffer[bufferSize];
     socklen_t clientAddrLen = sizeof(clientAddr);
     int bytesRead = recvfrom(serverSocket, buffer, sizeof(buffer), 0, (struct sockaddr *)&clientAddr, &clientAddrLen);
@@ -186,7 +186,6 @@ void ServerManager::createServer(const std::string &serverType, int port)
         server = new UDPServer();
     }
     server->setport(port);
-    server->start();
     servers.push_back(server);
 }
 
@@ -261,35 +260,35 @@ int ServerManager::getServerCount()
     return servers.size();
 }
 
-int main()
-{
-    TCPServer server;
-    server.start();
+// int main()
+// {
+//     TCPServer server;
+//     server.start();
 
-    // // 测试接收数据
-    // std::string receivedData;
-    // server.receiveData(receivedData);
-    // std::cout << "Received data: " << receivedData << std::endl;
+//     // // 测试接收数据
+//     // std::string receivedData;
+//     // server.receiveData(receivedData);
+//     // std::cout << "Received data: " << receivedData << std::endl;
 
-    for (int i = 0; i < 1024; i++)
-    {
-        // 测试接收大数据块
-        char *receivedLargeData = new char[4 * 1024 * 1024]; // 4M大小的数据块
-        server.receiveLargeData(receivedLargeData, 4 * 1024 * 1024);
-        // 处理receivedLargeData
-        delete[] receivedLargeData;
-        std::cout<<"receive "<<i;
-    }
-    // // 测试发送数据
-    // std::string testData = "Hello, this is a test";
-    // server.sendData(testData);
+//     for (int i = 0; i < 1024; i++)
+//     {
+//         // 测试接收大数据块
+//         char *receivedLargeData = new char[4 * 1024 * 1024]; // 4M大小的数据块
+//         server.receiveLargeData(receivedLargeData, 4 * 1024 * 1024);
+//         // 处理receivedLargeData
+//         delete[] receivedLargeData;
+//         std::cout<<"receive "<<i;
+//     }
+//     // // 测试发送数据
+//     // std::string testData = "Hello, this is a test";
+//     // server.sendData(testData);
 
-    // // 测试发送大数据块
-    // char *largeTestData = new char[4 * 1024 * 1024]; // 4M大小的数据块
-    // // 填充largeTestData
-    // server.sendLargeData(largeTestData, 4 * 1024 * 1024);
-    // delete[] largeTestData;
+//     // // 测试发送大数据块
+//     // char *largeTestData = new char[4 * 1024 * 1024]; // 4M大小的数据块
+//     // // 填充largeTestData
+//     // server.sendLargeData(largeTestData, 4 * 1024 * 1024);
+//     // delete[] largeTestData;
 
-    // 关闭socket等操作
-    return 0;
-}
+//     // 关闭socket等操作
+//     return 0;
+// }
