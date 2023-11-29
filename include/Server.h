@@ -21,6 +21,7 @@ public:
     virtual void stop() = 0;
     std::string getipAddress();
     int getport();
+    void setport(int port) {this->port = port;}
 
 protected:
     int serverSocket;
@@ -29,7 +30,7 @@ protected:
 
 private:
     std::string ipAddress; // IP地址
-    int port = 4396;       // 端口号
+    int port;       // 端口号
     bool isConnected;      // 是否已连接
 };
 
@@ -57,6 +58,24 @@ public:
     void stop() override;
 private:
     sockaddr_in clientAddr;
+};
+
+class ServerManager
+{
+public:
+    void createServer(const std::string &serverType, int port);
+    void deleteServer(int index);
+    Server *getServer(int index);
+    void startServer(int index);
+    void stopServer(int index);
+    void receiveData(int index, std::string &data);
+    void receiveLargeData(int index, char *largeData, int dataSize);
+    void sendData(int index, const std::string &data);
+    void sendLargeData(int index, const char *largeData, int dataSize);
+    int getServerCount();
+
+private:
+    std::vector<Server *> servers; // 服务器对象列表
 };
 
 #endif

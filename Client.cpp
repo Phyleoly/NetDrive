@@ -158,57 +158,91 @@ void UDPClient::disconnect()
     close(clientSocket);
 }
 
-// void ClientManager::addClient(Client *client)
-// {
-//     clients.push_back(client);
-// }
+void ClientManager::createClient(const std::string &clientType, const std::string &ipAddress, int port)
+{
+    Client *client = nullptr;
+    if (clientType == "TCP")
+    {
+        client = new TCPClient();
+    }
+    else if (clientType == "UDP")
+    {
+        client = new UDPClient();
+    }
+    client->connectByIp(ipAddress, port);
+    clients.push_back(client);
+}
 
-// void ClientManager::removeClient(Client *client)
-// {
-//     for (auto it = clients.begin(); it != clients.end(); ++it)
-//     {
-//         if (*it == client)
-//         {
-//             clients.erase(it);
-//             break;
-//         }
-//     }
-// }
+void ClientManager::deleteClient(int index)
+{
+    if (index >= 0 && index < clients.size())
+    {
+        delete clients[index];
+        clients.erase(clients.begin() + index);
+    }
+}
 
-// void ClientManager::connectAll()
-// {
-//     for (auto client : clients)
-//     {
-//         client->connect();
-//     }
-// }
+Client *ClientManager::getClient(int index)
+{
+    if (index >= 0 && index < clients.size())
+    {
+        return clients[index];
+    }
+    return nullptr;
+}
 
-// void ClientManager::sendDataAll(const std::string &data)
-// {
-//     for (auto client : clients)
-//     {
-//         client->sendData(data);
-//     }
-// }
+void ClientManager::connectClient(int index)
+{
+    if (index >= 0 && index < clients.size())
+    {
+        clients[index]->connectByIp(clients[index]->getIpAddress(), clients[index]->getPort());
+    }
+}
 
-// void ClientManager::receiveDataAll(std::vectorstd::string &receivedData)
-// {
-//     for (auto client : clients)
-//     {
-//         std::string data = client->receiveData();
-//         receivedData.push_back(data);
-//     }
-// }
+void ClientManager::disconnectClient(int index)
+{
+    if (index >= 0 && index < clients.size())
+    {
+        clients[index]->disconnect();
+    }
+}
 
-// void ClientManager::disconnectAll()
-// {
-//     for (auto client : clients)
-//     {
-//         client->disconnect();
-//     }
-// }
+void ClientManager::sendData(int index, const std::string &data)
+{
+    if (index >= 0 && index < clients.size())
+    {
+        clients[index]->sendData(data);
+    }
+}
 
+void ClientManager::sendLargeData(int index, const char *largeData, int dataSize)
+{
+    if (index >= 0 && index < clients.size())
+    {
+        clients[index]->sendLargeData(largeData, dataSize);
+    }
+}
 
+void ClientManager::receiveData(int index, std::string &data)
+{
+    if (index >= 0 && index < clients.size())
+    {
+        clients[index]->receiveData(data);
+    }
+}
+
+void ClientManager::receiveLargeData(int index, std::vector<char> &largeData, int dataSize)
+{
+    if (index >= 0 && index < clients.size())
+    {
+        clients[index]->receiveLargeData(largeData, dataSize);
+    }
+}
+
+int ClientManager::getClientCount()
+{
+    return clients.size();
+}
 
 int main()
 {

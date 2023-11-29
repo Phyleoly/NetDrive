@@ -174,6 +174,93 @@ void UDPServer::stop()
     close(serverSocket);
 }
 
+void ServerManager::createServer(const std::string &serverType, int port)
+{
+    Server *server = nullptr;
+    if (serverType == "TCP")
+    {
+        server = new TCPServer();
+    }
+    else if (serverType == "UDP")
+    {
+        server = new UDPServer();
+    }
+    server->setport(port);
+    server->start();
+    servers.push_back(server);
+}
+
+void ServerManager::deleteServer(int index)
+{
+    if (index >= 0 && index < servers.size())
+    {
+        delete servers[index];
+        servers.erase(servers.begin() + index);
+    }
+}
+
+Server *ServerManager::getServer(int index)
+{
+    if (index >= 0 && index < servers.size())
+    {
+        return servers[index];
+    }
+    return nullptr;
+}
+
+void ServerManager::startServer(int index)
+{
+    if (index >= 0 && index < servers.size())
+    {
+        servers[index]->start();
+    }
+}
+
+void ServerManager::stopServer(int index)
+{
+    if (index >= 0 && index < servers.size())
+    {
+        servers[index]->stop();
+    }
+}
+
+void ServerManager::receiveData(int index, std::string &data)
+{
+    if (index >= 0 && index < servers.size())
+    {
+        servers[index]->receiveData(data);
+    }
+}
+
+void ServerManager::receiveLargeData(int index, char *largeData, int dataSize)
+{
+    if (index >= 0 && index < servers.size())
+    {
+        servers[index]->receiveLargeData(largeData, dataSize);
+    }
+}
+
+void ServerManager::sendData(int index, const std::string &data)
+{
+    if (index >= 0 && index < servers.size())
+    {
+        servers[index]->sendData(data);
+    }
+}
+
+void ServerManager::sendLargeData(int index, const char *largeData, int dataSize)
+{
+    if (index >= 0 && index < servers.size())
+    {
+        servers[index]->sendLargeData(largeData, dataSize);
+    }
+}
+
+int ServerManager::getServerCount()
+{
+    return servers.size();
+}
+
 int main()
 {
     TCPServer server;
