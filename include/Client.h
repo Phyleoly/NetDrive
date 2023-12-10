@@ -9,10 +9,13 @@
 #include <unistd.h>
 #include <chrono>
 #include <cstring>
+#include "ThreadPool.h"
 
 class Client
 {
 public:
+   // Client(std::string ipAddress, int port);
+    // virtual void connect() = 0;
     virtual void connectByIp(const std::string &ipAddress, int port) = 0;
     virtual void sendData(const std::string &data) = 0;
     virtual void sendLargeData(const char *largeData, int dataSize) = 0;
@@ -21,8 +24,9 @@ public:
     virtual void disconnect() = 0;
     std::string getIpAddress() { return ipAddress; }
     int getPort() { return port; }
-    void setIpAddress(std::string ipAddress) {this->ipAddress = ipAddress;}
-    void setPort(int port) {this->port = port;}
+    void setIpAddress(std::string ipAddress) { this->ipAddress = ipAddress; }
+    void setPort(int port) { this->port = port; }
+
 protected:
     int clientSocket;
 
@@ -36,6 +40,7 @@ private:
 class TCPClient : public Client
 {
 public:
+    // void connect() override;
     void connectByIp(const std::string &ipAddress, int port) override;
     void sendData(const std::string &data) override;
     void sendLargeData(const char *largeData, int dataSize) override;
@@ -48,11 +53,12 @@ public:
 class UDPClient : public Client
 {
 public:
+    // void connect() override;
     void connectByIp(const std::string &ipAddress, int port) override;
     void sendData(const std::string &data) override;
-    void sendLargeData(const char *largeData, int dataSize) override {};
+    void sendLargeData(const char *largeData, int dataSize) override{};
     void receiveData(std::string &data) override;
-    void receiveLargeData(std::vector<char> &largeData, int dataSize) override {};
+    void receiveLargeData(std::vector<char> &largeData, int dataSize) override{};
     void disconnect() override;
 
 private:
@@ -75,7 +81,17 @@ public:
     int findClientIndexByIp(const std::string &ipAddress);
     int getCenter();
 
+    void registerUDP(ThreadPool threadPool, Client* client);
+
+    // void registerTCPClient(const std::string &ipAddress, int port);
+    // void registerUDPClient(const std::string &ipAddress, int port);
+
+    // void registerSendData() void registerSendLargeData()
+
+    // 命令只提供注册（添加待处理逻辑），每次循环处理
 private:
-    std::vector<Client *> clients; // 客户端对象列表
+    std::vector<Client *> clients;       // 普通客户端对象列表
+    std::vector<Client *> centerClients; //连接中心服务器的客户端
 };
+
 #endif

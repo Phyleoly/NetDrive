@@ -16,8 +16,8 @@
 class Command
 {
 public:
-    virtual void executeC(ClientManager clientManager) = 0;
-    virtual void executeS(ServerManager ServerManager) = 0;
+    virtual void executeC(void* arg) = 0;
+    virtual void executeS(void* arg) = 0;
     virtual std::string getCommandType() = 0;
     std::string getParameter(int i) { return parameter.at(i); }
     int getParameterNum() { return parameter.size(); }
@@ -31,27 +31,43 @@ class ExitCommand : public Command
 {
 public:
     std::string getCommandType() override;
-    void executeC(ClientManager clientManager) override;
-    void executeS(ServerManager serverManager) override;
+    void executeC(void* arg) override;
+    void executeS(void* arg) override;
+};
+
+class SendBlockCommand : public Command
+{
+    std::string getCommandType() override;
+    void executeC(void* arg) override;
+    void executeS(void* arg) override;
+};
+
+class DeleteBlockCommand : public Command
+{
+    std::string getCommandType() override;
+    void executeC(void* arg) override;
+    void executeS(void* arg) override;
 };
 
 // 创建文件夹命令类
-class Mkdircommand : public Command
+class MkdirCommand : public Command
 {
 public:
     std::string getCommandType() override;
     // CreateFolderCommand(const std::string &folderName, const std::string &parentPath);
-    void executeC(ClientManager clientManager) override;
-    void executeS(ServerManager serverManager) override;
+    void executeC(void* arg) override;
+    void executeS(void* arg) override;
 };
 
-// // 删除文件或文件夹命令类
-// class DeleteCommand : public Command
-// {
-// public:
-//     DeleteCommand(const std::string &path);
-//     void execute() override;
-// };
+// 删除文件或文件夹命令类
+class RmdirCommand : public Command
+{
+public:
+    std::string getCommandType() override;
+    // DeleteCommand(const std::string &path);
+    void executeC(void* arg) override;
+    void executeS(void* arg) override;
+};
 
 // // 查看文件或文件夹列表命令类
 // class ListCommand : public Command

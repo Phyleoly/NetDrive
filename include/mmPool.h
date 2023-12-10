@@ -1,3 +1,6 @@
+#ifndef MM_POOL_H
+#define MM_POOL_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -286,3 +289,5 @@ void mp_free(struct mp_pool_s *pool, void *p)
         }
     }
 }
+
+#endif

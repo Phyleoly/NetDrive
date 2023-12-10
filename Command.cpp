@@ -15,8 +15,14 @@ Command *CommandParser::parseCommand(const std::string &commandStr)
         // 这里只是一个简单的示例，实际情况可能会更复杂
         if (token == "exit")
             ret = new ExitCommand();
+        else if(token == "sendblock")
+            ret = new SendBlockCommand();
+        else if(token == "deleteblock")
+            ret = new DeleteBlockCommand();
         else if(token == "mkdir")
-            ret = new Mkdircommand();
+            ret = new MkdirCommand();
+        else if(token == "rmdir")
+            ret = new RmdirCommand();
         // else if (token == "Delete")
         // {
         //     ret = std::make_unique<DeleteCommand>();
@@ -90,16 +96,36 @@ std::string ExitCommand::getCommandType() { return "exit"; }
 void ExitCommand::executeC(ClientManager clientManager) { exit(0); }
 void ExitCommand::executeS(ServerManager serverManager) { exit(0); }
 
-std::string Mkdircommand::getCommandType() {return "mkdir";}
 
-void Mkdircommand::executeC(ClientManager clientManager) 
+std::string SendBlockCommand::getCommandType() { return "sendblock"; }
+void SendBlockCommand::executeC(ClientManager)
+
+
+std::string MkdirCommand::getCommandType() {return "mkdir";}
+
+void MkdirCommand::executeC(ClientManager clientManager) 
 {
     Protocol protocol;
     std::string request;
     request = protocol.generateProtocolString(this);
     clientManager.sendData(clientManager.getCenter(), request);
 }
-void Mkdircommand::executeS(ServerManager servermanager)
+void MkdirCommand::executeS(ServerManager servermanager)
+{
+
+}
+
+std::string MkdirCommand::getCommandType() {return "rmdir";}
+
+void RmdirCommand::executeC(ClientManager clientManager)
+{
+    Protocol protocol;
+    std::string request;
+    request = protocol.generateProtocolString(this);
+    clientManager.sendData(clientManager.getCenter(), request);
+}
+
+void RmdirCommand::executeS(ServerManager servermanager)
 {
 
 }

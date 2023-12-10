@@ -260,6 +260,22 @@ int ServerManager::getServerCount()
     return servers.size();
 }
 
+void ServerManager::registerServer(ServerConfig serverconfig)
+{
+    std::string messageData;
+    CommandParser commandParser;
+    Protocol protocol;
+    UDPServer messageServer;
+    messageServer.setport(port);
+
+    messageServer.start();
+    messageServer.receiveData(messageData);
+    
+    Command* command=protocol.parseProtocolString(messageData);;
+
+    command->executeS()
+}
+
 // int main()
 // {
 //     TCPServer server;

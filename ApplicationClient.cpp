@@ -3,6 +3,8 @@
 #include <string>
 #include "include/Command.h"
 #include "include/Client.h"
+#include "include/File.h"
+
 
 // class ApplicationClient
 // {
@@ -25,12 +27,18 @@
 //     std::cout << "connect success!" << std::endl;
 // }
 
+
+
 int main()
 {
     std::string input;
     CommandParser commandParser;
     CommandExecutor commandexecutor;
     ClientManager clientManager;
+    ThreadPool threadPool(10);
+
+    // threadPool.addTask([&client]()
+    //                    { client.connectByIp("127.0.0.1", 8080); });
     
     clientManager.createClient("UDP", "127.0.0.1", 12348);
     clientManager.connectClient(0);
