@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <chrono>
 #include <cstring>
-#include "ThreadPool.h"
 
 class Client
 {
@@ -81,7 +80,7 @@ public:
     int findClientIndexByIp(const std::string &ipAddress);
     int getCenter();
 
-    void registerUDP(ThreadPool threadPool, Client* client);
+    //void registerUDP(ThreadPool threadPool, Client* client);
 
     // void registerTCPClient(const std::string &ipAddress, int port);
     // void registerUDPClient(const std::string &ipAddress, int port);

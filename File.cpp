@@ -747,3 +747,135 @@ Directory *Directory::findSubdirectoryByPath(std::string path)
     // 如果找不到子目录，则返回nullptr
     return nullptr;
 }
+
+
+
+
+
+
+mp_pool_s *memoryPool = mp_create_pool(123123);
+
+
+
+
+
+
+void FileSystem::initialize()
+{
+    this->newDirectoryId = 0;
+    this->newFileId = 0;
+
+    std::string path("");
+
+    this->rootDirectory = (Directory *)mp_alloc(memoryPool, sizeof(Directory));
+    this->rootDirectory->set(this->newDirectoryId);
+
+    // Directory* test = (Directory *)mp_alloc(memoryPool, sizeof(Directory));;
+    // this->rootDirectory->addSubdirectory(test);
+
+    this->currentDirectory = rootDirectory;
+}
+
+Directory *FileSystem::findDirectoryByPathRoot(std::string directoryPath)
+{
+    if (directoryPath == "")
+        return rootDirectory;
+    Directory *current = rootDirectory; // 从根目录开始
+    Directory *subDirectory = nullptr;
+    std::string token;
+    size_t pos = 0;
+    directoryPath.erase(0, 1); // 从路径中删除已处理的目录名
+    while (!directoryPath.empty() && (pos = directoryPath.find_first_of("/")) != std::string::npos)
+    {
+        token = directoryPath.substr(0, pos);
+
+        current = current->findSubdirectoryByName(token);
+        if (current == nullptr)
+            return nullptr;
+        directoryPath.erase(0, pos + 1); // 从路径中删除已处理的目录名
+        std::cout << directoryPath << std::endl
+                  << token << std::endl;
+    }
+
+    return current->findSubdirectoryByName(directoryPath);
+}
+
+void FileSystem::createDirectory(std::string directoryPath)
+{
+    // 检查directoryPath是否为空
+    if (directoryPath.empty())
+    {
+        std::cout << "Invalid directory path." << std::endl;
+        return;
+    }
+    // 检查directoryPath是否以/开头
+    if (directoryPath[0] != '/')
+    {
+        std::cout << "Invalid directory path. Path must start with /." << std::endl;
+        return;
+    }
+    int pos = directoryPath.find_last_of('/');
+    std::string dirFatherPath = directoryPath.substr(0, pos);
+    Directory *dirFather = findDirectoryByPathRoot(dirFatherPath);
+    if (dirFather == nullptr)
+    {
+        // std::cout<<"not found"<<std::endl;
+        return;
+    }
+    Directory *directory = (Directory *)mp_alloc(memoryPool, sizeof(Directory));
+    directory->set(directoryPath);
+    dirFather->addSubdirectory(directory);
+}
+
+void FileSystem::deleteDirectory(std::string directoryPath)
+{
+    Directory *directory = findDirectoryByPathRoot(directoryPath);
+    if (directory != nullptr)
+    {
+        currentDirectory->deleteSubdirectory(directory);
+        delete directory;
+    }
+    else
+    {
+        std::cout << "Directory not found." << std::endl;
+    }
+}
+
+File *FileSystem::findFileByPathRoot(std::string filePath)
+{
+    int pos = filePath.find_last_of("/");
+    std::string dirPath = filePath.substr(0, pos);
+    std::string fileName = filePath.substr(pos + 1);
+    Directory *diretory = findDirectoryByPathRoot(dirPath);
+    return diretory->findFileByName(fileName);
+}
+
+void FileSystem::createFile(std::string filePath)
+{
+    int pos = filePath.find_last_of("/");
+    std::string dirPath = filePath.substr(0, pos);
+    Directory *diretory = findDirectoryByPathRoot(dirPath);
+    File *file = (File *)mp_alloc(memoryPool, sizeof(File));
+    file->set(filePath);
+    diretory->addFile(file);
+}
+
+void FileSystem::deleteFile(std::string filePath)
+{
+    File *file = findFileByPathRoot(filePath);
+    if (file != nullptr)
+    {
+        currentDirectory->deleteFile(file);
+        delete file;
+    }
+    else
+    {
+        std::cout << "File not found." << std::endl;
+    }
+}
+
+
+void FileSystem::setCurrentDirectory(Directory *directory)
+{
+    this->currentDirectory = directory;
+}

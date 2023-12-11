@@ -275,10 +275,3 @@ int ClientManager::findClientIndexByIp(const std::string &ipAddress)
 
 int ClientManager::getCenter() { return 0; }
 
-void ClientManager::registerUDP(ThreadPool threadPool, Client *client)
-{
-    // threadPool.addTask([&client]()
-    //                    { client.connectByIp("127.0.0.1", 8080);
-
-    //                    });
-}

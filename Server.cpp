@@ -260,51 +260,7 @@ int ServerManager::getServerCount()
     return servers.size();
 }
 
-void ServerManager::registerServer(ServerConfig serverconfig)
-{
-    std::string messageData;
-    CommandParser commandParser;
-    Protocol protocol;
-    UDPServer messageServer;
-    messageServer.setport(port);
-
-    messageServer.start();
-    messageServer.receiveData(messageData);
-    
-    Command* command=protocol.parseProtocolString(messageData);;
-
-    command->executeS()
-}
-
-// int main()
+// void ServerManager::registerServer(CommandData* commandData)
 // {
-//     TCPServer server;
-//     server.start();
-
-//     // // 测试接收数据
-//     // std::string receivedData;
-//     // server.receiveData(receivedData);
-//     // std::cout << "Received data: " << receivedData << std::endl;
-
-//     for (int i = 0; i < 1024; i++)
-//     {
-//         // 测试接收大数据块
-//         char *receivedLargeData = new char[4 * 1024 * 1024]; // 4M大小的数据块
-//         server.receiveLargeData(receivedLargeData, 4 * 1024 * 1024);
-//         // 处理receivedLargeData
-//         delete[] receivedLargeData;
-//         std::cout<<"receive "<<i;
-//     }
-//     // // 测试发送数据
-//     // std::string testData = "Hello, this is a test";
-//     // server.sendData(testData);
-
-//     // // 测试发送大数据块
-//     // char *largeTestData = new char[4 * 1024 * 1024]; // 4M大小的数据块
-//     // // 填充largeTestData
-//     // server.sendLargeData(largeTestData, 4 * 1024 * 1024);
-//     // delete[] largeTestData;
-
-//     // 关闭socket等操作
-//     return 0;
+   
 // }

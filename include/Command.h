@@ -9,15 +9,12 @@
 #include <algorithm>
 #include <memory>
 #include <cstdlib>
-#include "Client.h"
-#include "Server.h"
-
+#include "File.h"
 // 命令类
 class Command
 {
 public:
-    virtual void executeC(void* arg) = 0;
-    virtual void executeS(void* arg) = 0;
+    virtual void execute(CommandData* commandData) = 0;
     virtual std::string getCommandType() = 0;
     std::string getParameter(int i) { return parameter.at(i); }
     int getParameterNum() { return parameter.size(); }
@@ -31,22 +28,19 @@ class ExitCommand : public Command
 {
 public:
     std::string getCommandType() override;
-    void executeC(void* arg) override;
-    void executeS(void* arg) override;
+    void execute(CommandData* commandData) override;
 };
 
 class SendBlockCommand : public Command
 {
     std::string getCommandType() override;
-    void executeC(void* arg) override;
-    void executeS(void* arg) override;
+    void execute(CommandData* commandData) override;
 };
 
 class DeleteBlockCommand : public Command
 {
     std::string getCommandType() override;
-    void executeC(void* arg) override;
-    void executeS(void* arg) override;
+    void execute(CommandData* commandData) override;
 };
 
 // 创建文件夹命令类
@@ -55,8 +49,7 @@ class MkdirCommand : public Command
 public:
     std::string getCommandType() override;
     // CreateFolderCommand(const std::string &folderName, const std::string &parentPath);
-    void executeC(void* arg) override;
-    void executeS(void* arg) override;
+    void execute(CommandData* commandData) override;
 };
 
 // 删除文件或文件夹命令类
@@ -65,8 +58,7 @@ class RmdirCommand : public Command
 public:
     std::string getCommandType() override;
     // DeleteCommand(const std::string &path);
-    void executeC(void* arg) override;
-    void executeS(void* arg) override;
+    void execute(CommandData* commandData) override;
 };
 
 // // 查看文件或文件夹列表命令类
@@ -176,23 +168,6 @@ public:
      * @return 解析得到的命令对象
      */
     Command* parseCommand(const std::string &commandStr);
-};
-
-// 命令执行器接口
-class CommandExecutor
-{
-public:
-    ~CommandExecutor() {}
-
-    /**
-     * 执行命令对象的服务端方法
-     */
-    void executeSCommand(Command* command, ServerManager serverManager);
-    /**
-     * 执行命令对象的客户端方法
-     * @param command 命令对象
-     */
-    void executeCCommand(Command* command, ClientManager clientManager);
 };
 
 // 协议类

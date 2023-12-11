@@ -7,7 +7,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include "Command.h"
 
 // 定义一个抽象的Server类
 class Server
@@ -75,8 +74,7 @@ public:
     void sendLargeData(int index, const char *largeData, int dataSize);
     int getServerCount();
 
-    void registerServer(ServerConfig* serverConfig);
-
+    // void registerServer(CommandData* commandData);
 private:
 
     std::vector<Server *> servers; // 服务器对象列表

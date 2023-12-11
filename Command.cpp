@@ -15,13 +15,13 @@ Command *CommandParser::parseCommand(const std::string &commandStr)
         // 这里只是一个简单的示例，实际情况可能会更复杂
         if (token == "exit")
             ret = new ExitCommand();
-        else if(token == "sendblock")
+        else if (token == "sendblock")
             ret = new SendBlockCommand();
-        else if(token == "deleteblock")
+        else if (token == "deleteblock")
             ret = new DeleteBlockCommand();
-        else if(token == "mkdir")
+        else if (token == "mkdir")
             ret = new MkdirCommand();
-        else if(token == "rmdir")
+        else if (token == "rmdir")
             ret = new RmdirCommand();
         // else if (token == "Delete")
         // {
@@ -43,17 +43,14 @@ Command *CommandParser::parseCommand(const std::string &commandStr)
     return ret;
 }
 
-void CommandExecutor::executeSCommand(Command *command, ServerManager serverManager) { command->executeS(serverManager); }
-
-void CommandExecutor::executeCCommand(Command *command, ClientManager clientManager) { command->executeC(clientManager); }
-
-std::string Protocol::generateProtocolString(Command* command)
+std::string Protocol::generateProtocolString(Command *command)
 {
     std::string protocolString;
 
     // 将命令对象的各个属性按照协议规则转换为字符串，并拼接到生成的协议字符串中
     protocolString += "CommandType: " + command->getCommandType() + "\n";
-    std::cout<<std::endl<<command->getParameterNum()<<std::endl;
+    std::cout << std::endl
+              << command->getParameterNum() << std::endl;
     for (int i = 0; i < command->getParameterNum(); i++)
     {
         protocolString += "Parameter" + std::to_string(i) + ": " + command->getParameter(i) + "\n";
@@ -63,7 +60,7 @@ std::string Protocol::generateProtocolString(Command* command)
     return protocolString;
 }
 
-Command* Protocol::parseProtocolString(const std::string &protocolString)
+Command *Protocol::parseProtocolString(const std::string &protocolString)
 {
 
     std::string input = protocolString;
@@ -93,39 +90,41 @@ Command* Protocol::parseProtocolString(const std::string &protocolString)
 
 // 命令
 std::string ExitCommand::getCommandType() { return "exit"; }
-void ExitCommand::executeC(ClientManager clientManager) { exit(0); }
-void ExitCommand::executeS(ServerManager serverManager) { exit(0); }
+void ExitCommand::execute(CommandData *commandData) { exit(0); }
 
+std::string MkdirCommand::getCommandType() { return "mkdir"; }
+void MkdirCommand::execute(CommandData *commandData)
+{
+    if (commandData->ifServer)
+    {
+        FileSystem *fileSystem = commandData->fileSystem;
+        fileSystem->createDirectory(this->getParameter(0));
+        // 返回OK
+    }
+    else
+    {
+        // OK处理
+        // ERROR处理
+    }
+}
+
+std::string RmdirCommand::getCommandType() { return "rmdir"; }
+void RmdirCommand::execute(CommandData *commandData)
+{
+    if (commandData->ifServer)
+    {
+        FileSystem *fileSystem = commandData->fileSystem;
+        fileSystem->deleteDirectory(this->getParameter(0));
+        // 返回OK
+    }
+    else
+    {
+        // OK处理
+        // ERROR处理
+    }
+}
 
 std::string SendBlockCommand::getCommandType() { return "sendblock"; }
-void SendBlockCommand::executeC(ClientManager)
-
-
-std::string MkdirCommand::getCommandType() {return "mkdir";}
-
-void MkdirCommand::executeC(ClientManager clientManager) 
+void SendBlockCommand::execute(CommandData *commandData)
 {
-    Protocol protocol;
-    std::string request;
-    request = protocol.generateProtocolString(this);
-    clientManager.sendData(clientManager.getCenter(), request);
-}
-void MkdirCommand::executeS(ServerManager servermanager)
-{
-
-}
-
-std::string MkdirCommand::getCommandType() {return "rmdir";}
-
-void RmdirCommand::executeC(ClientManager clientManager)
-{
-    Protocol protocol;
-    std::string request;
-    request = protocol.generateProtocolString(this);
-    clientManager.sendData(clientManager.getCenter(), request);
-}
-
-void RmdirCommand::executeS(ServerManager servermanager)
-{
-
 }
