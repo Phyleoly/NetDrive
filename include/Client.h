@@ -13,7 +13,7 @@
 class Client
 {
 public:
-   // Client(std::string ipAddress, int port);
+    // Client(std::string ipAddress, int port);
     // virtual void connect() = 0;
     virtual void connectByIp(const std::string &ipAddress, int port) = 0;
     virtual void sendData(const std::string &data) = 0;
@@ -41,6 +41,7 @@ class TCPClient : public Client
 public:
     // void connect() override;
     void connectByIp(const std::string &ipAddress, int port) override;
+    void connectServer() { this->connectByIp(this->getIpAddress(), this->getPort()); }
     void sendData(const std::string &data) override;
     void sendLargeData(const char *largeData, int dataSize) override;
     void receiveData(std::string &data) override;
@@ -54,6 +55,7 @@ class UDPClient : public Client
 public:
     // void connect() override;
     void connectByIp(const std::string &ipAddress, int port) override;
+    void connectServer() { this->connectByIp(this->getIpAddress(), this->getPort()); }
     void sendData(const std::string &data) override;
     void sendLargeData(const char *largeData, int dataSize) override{};
     void receiveData(std::string &data) override;
@@ -80,7 +82,7 @@ public:
     int findClientIndexByIp(const std::string &ipAddress);
     int getCenter();
 
-    //void registerUDP(ThreadPool threadPool, Client* client);
+    // void registerUDP(ThreadPool threadPool, Client* client);
 
     // void registerTCPClient(const std::string &ipAddress, int port);
     // void registerUDPClient(const std::string &ipAddress, int port);
@@ -90,7 +92,7 @@ public:
     // 命令只提供注册（添加待处理逻辑），每次循环处理
 private:
     std::vector<Client *> clients;       // 普通客户端对象列表
-    std::vector<Client *> centerClients; //连接中心服务器的客户端
+    std::vector<Client *> centerClients; // 连接中心服务器的客户端
 };
 
 #endif

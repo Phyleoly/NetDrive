@@ -1,10 +1,10 @@
 ALL: AppC AppS
 
-AppC: ApplicationClient.o Command.o ThreadPool.o
-	g++ -o AppC ApplicationClient.o Command.o ThreadPool.o
+AppC: ApplicationClient.o Command.o ThreadPool.o File.o Client.o
+	g++ -o AppC ApplicationClient.o Command.o ThreadPool.o File.o Client.o
 	
-AppS: ApplicationServer.o ThreadPool.o Command.o Server.o
-	g++ -o AppS ApplicationServer.o ThreadPool.o Command.o Server.o
+AppS: ApplicationServer.o ThreadPool.o Command.o Server.o File.o Client.o
+	g++ -o AppS ApplicationServer.o ThreadPool.o Command.o Server.o File.o Client.o
 
 ApplicationClient.o: ApplicationClient.cpp
 	g++ -c ApplicationClient.cpp

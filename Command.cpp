@@ -17,8 +17,8 @@ Command *CommandParser::parseCommand(const std::string &commandStr)
             ret = new ExitCommand();
         else if (token == "sendblock")
             ret = new SendBlockCommand();
-        else if (token == "deleteblock")
-            ret = new DeleteBlockCommand();
+        // else if (token == "deleteblock")
+        //     ret = new DeleteBlockCommand();
         else if (token == "mkdir")
             ret = new MkdirCommand();
         else if (token == "rmdir")
@@ -89,39 +89,96 @@ Command *Protocol::parseProtocolString(const std::string &protocolString)
 }
 
 // 命令
+std::string OKCommand::getCommandType() { return "OK"; }
+void OKCommand::execute(CommandData *commandData) {}
+
+std::string NoCommand::getCommandType() { return "NO"; }
+void NoCommand::execute(CommandData *commandData) {}
+
 std::string ExitCommand::getCommandType() { return "exit"; }
 void ExitCommand::execute(CommandData *commandData) { exit(0); }
 
 std::string MkdirCommand::getCommandType() { return "mkdir"; }
 void MkdirCommand::execute(CommandData *commandData)
 {
+    Protocol protocol;
     if (commandData->ifServer)
     {
         FileSystem *fileSystem = commandData->fileSystem;
         fileSystem->createDirectory(this->getParameter(0));
         // 返回OK
+        OKCommand ok;
+        commandData->messageServer->sendData(protocol.generateProtocolString(&ok));
     }
     else
     {
-        // OK处理
-        // ERROR处理
+        // commandData->messageClient->connectServer();
+        commandData->messageClient->sendData(protocol.generateProtocolString(this));
+
+        std::string messageData;
+        commandData->messageClient->receiveData(messageData);
+        Command *command = protocol.parseProtocolString(messageData);
+
+        if (command->getCommandType() == "ok")
+        {
+            // OK处理
+        }
+        else
+        {
+            // ERROR处理
+            std::cout << "ERROR";
+        }
     }
 }
 
 std::string RmdirCommand::getCommandType() { return "rmdir"; }
 void RmdirCommand::execute(CommandData *commandData)
 {
+    Protocol protocol;
     if (commandData->ifServer)
     {
         FileSystem *fileSystem = commandData->fileSystem;
         fileSystem->deleteDirectory(this->getParameter(0));
         // 返回OK
+        OKCommand ok;
+        commandData->messageServer->sendData(protocol.generateProtocolString(&ok));
     }
     else
     {
-        // OK处理
-        // ERROR处理
+        // commandData->messageClient->connectServer();
+        commandData->messageClient->sendData(protocol.generateProtocolString(this));
+
+        std::string messageData;
+        commandData->messageClient->receiveData(messageData);
+        Command *command = protocol.parseProtocolString(messageData);
+
+        if (command->getCommandType() == "ok")
+        {
+            // OK处理
+        }
+        else
+        {
+            // ERROR处理
+            std::cout << "ERROR";
+        }
     }
+}
+
+std::string UploadCommand::getCommandType() { return "upload"; }
+void UploadCommand::execute(CommandData *commandData)
+{
+    if (commandData->ifServer)
+    {
+    }
+    else
+    {
+        UDPClient UDPClient;
+    }
+}
+
+std::string DownloadCommand::getCommandType() { return "download"; }
+void DownloadCommand::execute(CommandData *commandData)
+{
 }
 
 std::string SendBlockCommand::getCommandType() { return "sendblock"; }

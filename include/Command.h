@@ -10,11 +10,26 @@
 #include <memory>
 #include <cstdlib>
 #include "File.h"
+#include "Client.h"
+#include "Server.h"
+
+class CommandData
+{
+public:
+    FileSystem *fileSystem = nullptr;
+    std::string ipAddress;
+    int port;
+    bool ifServer; // 0 Client  1 Server
+
+    UDPServer* messageServer = nullptr;
+    UDPClient* messageClient = nullptr;
+};
+
 // 命令类
 class Command
 {
 public:
-    virtual void execute(CommandData* commandData) = 0;
+    virtual void execute(CommandData *commandData) = 0;
     virtual std::string getCommandType() = 0;
     std::string getParameter(int i) { return parameter.at(i); }
     int getParameterNum() { return parameter.size(); }
@@ -24,24 +39,38 @@ private:
     std::vector<std::string> parameter;
 };
 
+class OKCommand : public Command
+{
+public:
+    std::string getCommandType() override;
+    void execute(CommandData *commandData) override;
+};
+
+class NoCommand : public Command
+{
+public:
+    std::string getCommandType() override;
+    void execute(CommandData *commandData) override;
+};
+
 class ExitCommand : public Command
 {
 public:
     std::string getCommandType() override;
-    void execute(CommandData* commandData) override;
+    void execute(CommandData *commandData) override;
 };
 
 class SendBlockCommand : public Command
 {
     std::string getCommandType() override;
-    void execute(CommandData* commandData) override;
+    void execute(CommandData *commandData) override;
 };
 
-class DeleteBlockCommand : public Command
-{
-    std::string getCommandType() override;
-    void execute(CommandData* commandData) override;
-};
+// class DeleteBlockCommand : public Command
+// {
+//     std::string getCommandType() override;
+//     void execute(CommandData* commandData) override;
+// };
 
 // 创建文件夹命令类
 class MkdirCommand : public Command
@@ -49,18 +78,35 @@ class MkdirCommand : public Command
 public:
     std::string getCommandType() override;
     // CreateFolderCommand(const std::string &folderName, const std::string &parentPath);
-    void execute(CommandData* commandData) override;
+    void execute(CommandData *commandData) override;
 };
 
-// 删除文件或文件夹命令类
+// 删除文件夹命令类
 class RmdirCommand : public Command
 {
 public:
     std::string getCommandType() override;
     // DeleteCommand(const std::string &path);
-    void execute(CommandData* commandData) override;
+    void execute(CommandData *commandData) override;
 };
 
+// 分享文件或文件夹命令类
+class UploadCommand : public Command
+{
+public:
+    std::string getCommandType() override;
+    // DeleteCommand(const std::string &path);
+    void execute(CommandData *commandData) override;
+};
+
+//
+class DownloadCommand : public Command
+{
+public:
+    std::string getCommandType() override;
+    // DeleteCommand(const std::string &path);
+    void execute(CommandData *commandData) override;
+};
 // // 查看文件或文件夹列表命令类
 // class ListCommand : public Command
 // {
@@ -101,13 +147,7 @@ public:
 //     void execute() override;
 // };
 
-// // 分享文件或文件夹命令类
-// class ShareCommand : public Command
-// {
-// public:
-//     ShareCommand(const std::string &path);
-//     void execute() override;
-// };
+
 
 // // 取消分享文件或文件夹命令类
 // class UnshareCommand : public Command
@@ -167,7 +207,7 @@ public:
      * @param commandStr 命令行字符串
      * @return 解析得到的命令对象
      */
-    Command* parseCommand(const std::string &commandStr);
+    Command *parseCommand(const std::string &commandStr);
 };
 
 // 协议类
@@ -181,14 +221,14 @@ public:
      * @param command 命令对象
      * @return 生成的协议字符串
      */
-    std::string generateProtocolString(Command* command);
+    std::string generateProtocolString(Command *command);
 
     /**
      * 解析协议字符串，生成相应的命令对象
      * @param protocolString 协议字符串
      * @return 解析得到的命令对象
      */
-    Command* parseProtocolString(const std::string &protocolString);
+    Command *parseProtocolString(const std::string &protocolString);
 
     /**
      * 验证协议字符串是否合法

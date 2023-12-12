@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "mmPool.h"
+// #include "mmPool.h"
 #define MAX_BLOCK_SIZE 4194304
 #define MAX_FILES_NUM 1024
 #define MAX_SUBDIRECTORIES_NUM 1024
@@ -24,24 +24,24 @@ public:
     int getDataSize();
     std::string getFilePath();
 
-    template <typename T, typename... Args>
-    void set(T arg, Args... args)
-    {
-        set(std::forward<T>(arg));
-        set(std::forward<Args>(args)...);
-    }
-    template <typename T>
-    void set(T arg);
+    // template <typename T, typename... Args>
+    // void set(T arg, Args... args)
+    // {
+    //     set(std::forward<T>(arg));
+    //     set(std::forward<Args>(args)...);
+    // }
+    // template <typename T>
+    // void set(T arg);
 
+
+    void setId(unsigned int id);
+    void setData(char *data);
+    void setFilePath(std::string filePath);
 private:
     unsigned int id;
     // Block* sameOrigin;           // 同源文件块id集合，即备份
     char *data;           // 块的数据向量
     std::string filePath; // 块保存的实体路径
-
-    void setId(unsigned int id);
-    void setData(char *data);
-    void setFilePath(std::string filePath);
 };
 
 // 虚拟文件类
@@ -61,24 +61,26 @@ public:
 
     void setOutDir(std::string outDir);
     void setNumBlocks(int num);
-    void splitFile();
+    void splitFile();     
     void mergeFile();
 
-    template <typename T, typename... Args>
-    void set(T arg, Args... args)
-    {
-        set(std::forward<T>(arg));
-        set(std::forward<Args>(args)...);
-    }
 
-    template <typename T>
-    void set(T arg);
-
-private:
+    
     void setId(unsigned int id);
     void setBlockId(unsigned int *BlockId);
     void setFilePath(std::string filePath);
     void setBlocks(Block *blocks);
+    // template <typename T, typename... Args>
+    // void set(T arg, Args... args)
+    // {
+    //     set(std::forward<T>(arg));
+    //     set(std::forward<Args>(args)...);
+    // }
+
+    // template <typename T>
+    // void set(T arg);
+
+private:
 
     unsigned int id;
     unsigned int *BlockId;
@@ -102,18 +104,22 @@ public:
     File **getFiles();
     Directory **getSubdirectories();
 
-    template <typename T, typename... Args>
-    void set(T arg, Args... args)
-    {
-        set(std::forward<T>(arg));
-        set(std::forward<Args>(args)...);
-    }
-    template <typename T>
-    void set(T arg);
+    // template <typename T, typename... Args>
+    // void set(T arg, Args... args)
+    // {
+    //     set(std::forward<T>(arg));
+    //     set(std::forward<Args>(args)...);
+    // }
+    // template <typename T>
+    // void set(T arg);
 
    
     void setNumFiles(int numFile);
     void setNumSubdirectories(int numSubdirectories);
+
+    
+    void setId(unsigned int id);
+    void setDirectoryPath(std::string directoryPath);
 
     // void setFiles(File *files[]);
     // void setSubdirectories(Directory *subdirectories[]);
@@ -139,42 +145,9 @@ private:
     Directory *subdirectories[MAX_SUBDIRECTORIES_NUM];
     // 目录属性和操作
 
-    void setId(unsigned int id);
-    void setDirectoryPath(std::string directoryPath);
 };
 
 
-
-template <typename T>
-void Block::set(T arg) { std::cerr << " no patch " << std::endl; }
-template <>
-void Block::set<unsigned int>(unsigned int id) { setId(id); }
-template <>
-void Block::set<std::string>(std::string filePath) { setFilePath(filePath); }
-template <>
-void Block::set<char *>(char *data) { setData(data); }
-
-template <typename T>
-void File::set(T arg) { std::cerr << " no patch " << std::endl; }
-template <>
-void File::set<unsigned int>(unsigned int id) { setId(id); }
-template <>
-void File::set<std::string>(std::string filePath) { setFilePath(filePath); }
-template <>
-void File::set<const char *>(const char *filePath)
-{
-    std::string path(filePath);
-    setFilePath(path);
-}
-template <>
-void File::set<Block *>(Block *blocks) { setBlocks(blocks); }
-
-template <typename T>
-void Directory::set(T arg) { std::cerr << " no patch " << std::endl; }
-template <>
-void Directory::set<unsigned int>(unsigned int id) { setId(id); }
-template <>
-void Directory::set<std::string>(std::string directoryPath) { setDirectoryPath(directoryPath); }
 
 class FileSystem
 {
@@ -359,14 +332,6 @@ public:
 
 
 
-
-class CommandData
-{
-public:
-    FileSystem *fileSystem;
-    int port;
-    bool ifServer; // 0 Client  1 Server
-};
 
 
 #endif

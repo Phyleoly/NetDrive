@@ -8,6 +8,178 @@
 #include <cstdio>
 #include "include/File.h"
 
+void Block::setId(unsigned int id)
+{
+    this->id = id;
+}
+
+void Block::setData(char *data)
+{
+    this->data = data;
+}
+
+unsigned int File::getId()
+{
+    return this->id;
+}
+
+std::string File::getFilePath()
+{
+    return this->filePath;
+}
+
+unsigned int *File::getBlockId()
+{
+    return this->BlockId;
+}
+
+std::string File::getOutDir()
+{
+    return this->outDir;
+}
+Block *File::getFirstBlock()
+{
+    return this->blocks;
+}
+
+int File::getNumBlocks()
+{
+    return this->numBlocks;
+}
+
+void File::setId(unsigned int id)
+{
+    this->id = id;
+}
+
+void File::setBlockId(unsigned int *BlockId)
+{
+    this->BlockId = BlockId;
+}
+
+void File::setFilePath(std::string filePath)
+{
+    this->filePath = filePath;
+}
+
+void File::setOutDir(std::string outDir)
+{
+    this->outDir = outDir;
+}
+
+void File::setBlocks(Block *blocks)
+{
+    this->blocks = blocks;
+}
+
+void File::setNumBlocks(int num)
+{
+    this->numBlocks = num;
+}
+
+
+unsigned int Directory::getId()
+{
+    return this->id;
+}
+
+std::string Directory::getName()
+{
+    // 从文件路径中提取文件名
+    std::size_t found = this->directoryPath.find_last_of("/");
+    if (found != std::string::npos)
+    {
+        return directoryPath.substr(found + 1);
+    }
+    return "";
+}
+
+std::string Directory::getDirectoryPath()
+{
+    return this->directoryPath;
+}
+
+int Directory::getNumFiles()
+{
+    return this->numFiles;
+}
+
+int Directory::getNumSubdirectories()
+{
+    return this->numSubdirectories;
+}
+
+File **Directory::getFiles()
+{
+    return this->files;
+}
+
+Directory **Directory::getSubdirectories()
+{
+    return this->subdirectories;
+}
+
+void Directory::setId(unsigned int id)
+{
+    this->id = id;
+}
+
+void Directory::setDirectoryPath(std::string directoryPath)
+{
+    this->directoryPath = directoryPath;
+}
+
+void Directory::setNumFiles(int numFiles)
+{
+    this->numFiles = numFiles;
+}
+
+// void Directory::setFiles(File** files)
+// {
+//     this->files[]=files;
+// }
+
+void Directory::setNumSubdirectories(int numSubdirectories)
+{
+    this->numSubdirectories = numSubdirectories;
+}
+
+// void Directory::setSubdirectories(Directory *subdirectories[])
+// {
+//     this->subdirectories = subdirectories;
+// }
+
+// template <typename T>
+// void Block::set(T arg) { std::cerr << " no patch " << std::endl; }
+// template <>
+// void Block::set<unsigned int>(unsigned int id) { setId(id); }
+// template <>
+// void Block::set<std::string>(std::string filePath) { setFilePath(filePath); }
+// template <>
+// void Block::set<char *>(char *data) { setData(data); }
+
+// template <typename T>
+// void File::set(T arg) { std::cerr << " no patch " << std::endl; }
+// template <>
+// void File::set<unsigned int>(unsigned int id) { setId(id); }
+// template <>
+// void File::set<std::string>(std::string filePath) { setFilePath(filePath); }
+// template <>
+// void File::set<const char *>(const char *filePath)
+// {
+//     std::string path(filePath);
+//     setFilePath(path);
+// }
+// template <>
+// void File::set<Block *>(Block *blocks) { setBlocks(blocks); }
+
+// template <typename T>
+// void Directory::set(T arg) { std::cerr << " no patch " << std::endl; }
+// template <>
+// void Directory::set<unsigned int>(unsigned int id) { setId(id); }
+// template <>
+// void Directory::set<std::string>(std::string directoryPath) { setDirectoryPath(directoryPath); }
+
 // FileChunk::FileChunk(const std::string &filePath, long long offset, int size, int id) : id(id)
 // {
 //     std::ifstream file(filePath, std::ios::binary);
@@ -328,15 +500,6 @@ Block::~Block()
     // delete (this->filePath);
 }
 
-void Block::setId(unsigned int id)
-{
-    this->id = id;
-}
-
-void Block::setData(char *data)
-{
-    this->data = data;
-}
 
 void Block::setFilePath(std::string filePath)
 {
@@ -411,64 +574,7 @@ File::~File()
     // delete (this->blocks);
 }
 
-unsigned int File::getId()
-{
-    return this->id;
-}
 
-std::string File::getFilePath()
-{
-    return this->filePath;
-}
-
-unsigned int *File::getBlockId()
-{
-    return this->BlockId;
-}
-
-std::string File::getOutDir()
-{
-    return this->outDir;
-}
-Block *File::getFirstBlock()
-{
-    return this->blocks;
-}
-
-int File::getNumBlocks()
-{
-    return this->numBlocks;
-}
-
-void File::setId(unsigned int id)
-{
-    this->id = id;
-}
-
-void File::setBlockId(unsigned int *BlockId)
-{
-    this->BlockId = BlockId;
-}
-
-void File::setFilePath(std::string filePath)
-{
-    this->filePath = filePath;
-}
-
-void File::setOutDir(std::string outDir)
-{
-    this->outDir = outDir;
-}
-
-void File::setBlocks(Block *blocks)
-{
-    this->blocks = blocks;
-}
-
-void File::setNumBlocks(int num)
-{
-    this->numBlocks = num;
-}
 
 void File::splitFile()
 {
@@ -491,8 +597,10 @@ void File::splitFile()
     // std::cout<<fileSize<<std::endl<<numBlocks<<std::endl<<MAX_BLOCK_SIZE;
     for (int i = 0; i < numBlocks; i++)
     {
-        blocks[i].set(BlockId[i]); // 设置块的id
-        blocks[i].set(outDir + "/" + std::to_string(blocks[i].getId()));
+        blocks[i].setId(BlockId[i]);
+        // blocks[i].set(BlockId[i]); // 设置块的id
+        blocks[i].setFilePath(outDir + "/" + std::to_string(blocks[i].getId()));
+        // blocks[i].set(outDir + "/" + std::to_string(blocks[i].getId()));
         // std::cout<<blocks[i].getId()<<blocks[i].getFilePath();
 
         int blockSize = std::min(MAX_BLOCK_SIZE, fileSize); // 计算当前块的大小
@@ -501,7 +609,8 @@ void File::splitFile()
         inputFile.read(blockData, blockSize); // 从输入文件读取数据到块的数据向量
         // std::cout<<blockData;
 
-        blocks[i].set(blockData); // 设置块的数据向量
+        blocks[i].setData(blockData);
+        // blocks[i].set(blockData); // 设置块的数据向量
         blocks[i].saveBlock();    // 将块保存到指定的实体文件路径
 
         fileSize -= blockSize; // 更新剩余文件大小
@@ -568,76 +677,7 @@ std::string File::getName()
 //     this->directoryPath = directoryPath;
 // }
 
-unsigned int Directory::getId()
-{
-    return this->id;
-}
 
-std::string Directory::getName()
-{
-    // 从文件路径中提取文件名
-    std::size_t found = this->directoryPath.find_last_of("/");
-    if (found != std::string::npos)
-    {
-        return directoryPath.substr(found + 1);
-    }
-    return "";
-}
-
-std::string Directory::getDirectoryPath()
-{
-    return this->directoryPath;
-}
-
-int Directory::getNumFiles()
-{
-    return this->numFiles;
-}
-
-int Directory::getNumSubdirectories()
-{
-    return this->numSubdirectories;
-}
-
-File **Directory::getFiles()
-{
-    return this->files;
-}
-
-Directory **Directory::getSubdirectories()
-{
-    return this->subdirectories;
-}
-
-void Directory::setId(unsigned int id)
-{
-    this->id = id;
-}
-
-void Directory::setDirectoryPath(std::string directoryPath)
-{
-    this->directoryPath = directoryPath;
-}
-
-void Directory::setNumFiles(int numFiles)
-{
-    this->numFiles = numFiles;
-}
-
-// void Directory::setFiles(File** files)
-// {
-//     this->files[]=files;
-// }
-
-void Directory::setNumSubdirectories(int numSubdirectories)
-{
-    this->numSubdirectories = numSubdirectories;
-}
-
-// void Directory::setSubdirectories(Directory *subdirectories[])
-// {
-//     this->subdirectories = subdirectories;
-// }
 
 void Directory::initial()
 {
@@ -753,7 +793,7 @@ Directory *Directory::findSubdirectoryByPath(std::string path)
 
 
 
-mp_pool_s *memoryPool = mp_create_pool(123123);
+// mp_pool_s *memoryPool = mp_create_pool(123123);
 
 
 
@@ -767,8 +807,10 @@ void FileSystem::initialize()
 
     std::string path("");
 
-    this->rootDirectory = (Directory *)mp_alloc(memoryPool, sizeof(Directory));
-    this->rootDirectory->set(this->newDirectoryId);
+    this->rootDirectory =(Directory *) malloc(sizeof(Directory));
+    // (Directory *)mp_alloc(memoryPool, sizeof(Directory));
+    this->rootDirectory->setId(this->newDirectoryId);
+    // this->rootDirectory->set(this->newDirectoryId);
 
     // Directory* test = (Directory *)mp_alloc(memoryPool, sizeof(Directory));;
     // this->rootDirectory->addSubdirectory(test);
@@ -822,8 +864,10 @@ void FileSystem::createDirectory(std::string directoryPath)
         // std::cout<<"not found"<<std::endl;
         return;
     }
-    Directory *directory = (Directory *)mp_alloc(memoryPool, sizeof(Directory));
-    directory->set(directoryPath);
+    Directory *directory = (Directory *)malloc(sizeof(Directory));
+    // mp_alloc(memoryPool, sizeof(Directory));
+    directory->setDirectoryPath(directoryPath);
+    // directory->set(directoryPath);
     dirFather->addSubdirectory(directory);
 }
 
@@ -855,8 +899,10 @@ void FileSystem::createFile(std::string filePath)
     int pos = filePath.find_last_of("/");
     std::string dirPath = filePath.substr(0, pos);
     Directory *diretory = findDirectoryByPathRoot(dirPath);
-    File *file = (File *)mp_alloc(memoryPool, sizeof(File));
-    file->set(filePath);
+    File *file = (File *)malloc(sizeof(File));
+    // mp_alloc(memoryPool, sizeof(File));
+    file->setFilePath(filePath);
+    // file->set(filePath);
     diretory->addFile(file);
 }
 

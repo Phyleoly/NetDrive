@@ -144,6 +144,7 @@ void UDPServer::start()
         std::cerr << "Bind failed" << std::endl;
         return;
     }
+    std::cout<<"Suce";
 }
 
 void UDPServer::receiveData(std::string &data)
